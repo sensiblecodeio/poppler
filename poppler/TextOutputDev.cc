@@ -912,20 +912,7 @@ void TextPool::sort()
         return back;
     };
 
-    const auto PosCmp = [](const TextWord &a, const TextWord &b) -> bool {
-        if (a.rot == 0) {
-            return ((a.xMin + a.xMax) <= (b.xMin + b.xMax));
-        }
-        if (a.rot == 1) {
-            return ((a.yMin + a.yMax) <= (b.yMin + b.yMax));
-        }
-        if (a.rot == 2) {
-            return ((b.xMin + b.xMax) <= (a.xMin + a.xMax));
-        }
-        return ((b.yMin + b.yMax) <= (a.yMin + a.yMax));
-    };
-
-    const auto SortedMerge = [PosCmp](TextWord *a, TextWord *b) {
+    const auto SortedMerge = [](TextWord *a, TextWord *b) {
         if (!a) {
             return b;
         }
@@ -936,7 +923,7 @@ void TextPool::sort()
         TextWord *head = nullptr;
         TextWord *cursor = nullptr;
 
-        if (PosCmp(*a, *b)) {
+        if (a->primaryCmp(b) <= 0) {
             head = cursor = a;
             a = a->next;
         } else {
@@ -945,7 +932,7 @@ void TextPool::sort()
         }
 
         while (a && b) {
-            if (PosCmp(*a, *b)) {
+            if (a->primaryCmp(b) <= 0) {
                 cursor->next = a;
                 cursor = cursor->next;
                 a = a->next;
